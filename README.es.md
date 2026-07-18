@@ -69,7 +69,15 @@ Para inspeccionar y confirmar los dispositivos activos:
    ```bash
    python main.py
    ```
-3. Para cambiar el modo de ejecución (ej. cambiar a modo voz), edita el archivo `main.py` y cambia el argumento `'escritura'` por `'voz'`:
-   ```python
-   ia_thread = threading.Thread(target=audio_processor.iniciar, args=(ia_queue, 'voz'), daemon=True)
-   ```
+---
+
+## 💻 Entorno de Pruebas (Especificaciones del Autor)
+
+Este proyecto ha sido desarrollado y probado con éxito bajo el siguiente entorno tecnológico:
+*   **Sistema Operativo:** Ubuntu Linux (64-bit)
+*   **Servidor de Audio:** PipeWire / PulseAudio (usando `module-null-sink`)
+*   **Intérprete de Python:** Python 3.14.4 (ejecutado en entorno virtual `venv`)
+*   **Compilador del Sistema:** GCC 15.2.0
+*   **Hardware de Inferencia:** Ejecución en CPU (con soporte automático para precisión FP32)
+*   **Editor/IDE:** VS Code / Cursor (con el intérprete asociado al entorno virtual)
+

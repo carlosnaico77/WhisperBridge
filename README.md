@@ -69,7 +69,15 @@ Confirm the active devices by running:
    ```bash
    python main.py
    ```
-3. To change modes, edit `main.py` and replace `'escritura'` with `'voz'`:
-   ```python
-   ia_thread = threading.Thread(target=audio_processor.iniciar, args=(ia_queue, 'voz'), daemon=True)
-   ```
+---
+
+## 💻 Testing Environment (Author's Specifications)
+
+This project has been successfully developed and verified under the following environment:
+*   **Operating System:** Ubuntu Linux (64-bit)
+*   **Audio Server:** PipeWire / PulseAudio (via `module-null-sink`)
+*   **Python Interpreter:** Python 3.14.4 (running inside a `venv` virtual environment)
+*   **System Compiler:** GCC 15.2.0
+*   **Inference Hardware:** CPU execution (with auto-fallback to FP32 precision)
+*   **Editor/IDE:** VS Code / Cursor (configured to point to the local `venv` interpreter)
+
