@@ -74,16 +74,42 @@ Confirm the active devices by running:
 
 ---
 
-## 🛠️ Running the Project
+## 🛠️ Installation & Execution (Step-by-Step)
 
-1. **Activate the virtual environment:**
-   ```bash
-   source venv/bin/activate
-   ```
-2. **Run the main application:**
-   ```bash
-   python main.py
-   ```
+Follow these steps to clone and run the project from scratch on your machine:
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/YOUR_USERNAME/WhisperBridge.git
+cd WhisperBridge
+```
+
+### 2. Install System Dependencies (Linux/Ubuntu)
+Since the `sounddevice` library interacts directly with your system audio, it requires the PortAudio development package to be installed on your OS:
+```bash
+sudo apt update
+sudo apt install portaudio19-dev
+```
+
+### 3. Set Up the Python Virtual Environment
+Create and activate a virtual environment to keep your project dependencies isolated:
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+### 4. Install Project Dependencies
+Install all required libraries with a single command:
+```bash
+pip install -r requirements.txt
+```
+
+### 5. Run the Project
+Start the main script:
+```bash
+python main.py
+```
+
 ---
 
 ## 🛣️ Future Roadmap & Requirements
