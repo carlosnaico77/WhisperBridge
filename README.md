@@ -43,6 +43,11 @@ We have fully refactored the original codebase, focusing on stability, performan
 6. **Warning Resolution (FP16 / FP32):**
    * We import `torch` to dynamically check if an NVIDIA GPU is available (`torch.cuda.is_available()`). On CPU, it automatically disables `fp16` (`fp16=False`), removing clean-up warnings in the terminal.
 
+7. **Flexible Execution Environments (Local vs Cloud API):**
+   * Integrated the `tipo_uso: TipoUso` parameter.
+   * **`'local'`**: 100% offline physical privacy. Loads Whisper locally on your CPU/GPU hardware.
+   * **`'api'`**: Peak local hardware optimization. Delegates transcribing workloads to the cloud. The file `processor.py` includes a template method `_transcribir_via_api` detailing in-memory WAV buffer generation and API POST request formatting where the user can plug in their API keys.
+
 ---
 
 ## 🎛️ Audio Routing in Ubuntu (Virtual Cable)

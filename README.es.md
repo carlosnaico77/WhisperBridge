@@ -43,6 +43,11 @@ Hemos llevado a cabo una reestructuración completa del código original enfocad
 6. **Corrección de Advertencias (FP16 / FP32):**
    * Importamos `torch` para comprobar dinámicamente si hay una tarjeta gráfica NVIDIA disponible (`torch.cuda.is_available()`). Si se ejecuta en CPU, deshabilita `fp16` automáticamente (`fp16=False`), eliminando las advertencias molestas en la terminal.
 
+7. **Flexibilidad de Ejecución (Local vs API Cloud):**
+   * Se incorporó el parámetro `tipo_uso: TipoUso`.
+   * **`'local'`**: Máxima privacidad. Carga Whisper en el hardware local.
+   * **`'api'`**: Optimización máxima de hardware. Delega la transcripción a la nube. El archivo `processor.py` incluye el método plantilla `_transcribir_via_api` comentando la conversión a WAV en memoria y cómo estructurar la petición HTTP para que el usuario coloque su clave de API.
+
 ---
 
 ## 🎛️ Configuración de Audio en Ubuntu (Tubería Virtual)
