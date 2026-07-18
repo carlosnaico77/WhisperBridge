@@ -1,0 +1,18 @@
+# Entornos virtuales (MUY IMPORTANTE ignorar esto ya que contiene miles de archivos instalados)
+venv/
+.venv/
+env/
+
+# Caché de Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+
+# Configuración del Editor (Opcional, pero recomendado ignorar configuraciones locales del usuario)
+.vscode/
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
