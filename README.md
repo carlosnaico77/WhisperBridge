@@ -1,73 +1,75 @@
-# Traductor & Transcriptor en Tiempo Real (Ubuntu)
+# Real-Time Translator & Transcriber (Ubuntu)
 
-Este proyecto es un procesador de audio en tiempo real diseñado para capturar sonido proveniente de una tubería o cable virtual de audio en Ubuntu (por ejemplo, el audio reproducido por el navegador web), transcribirlo en español utilizando la IA Whisper de OpenAI, y opcionalmente sintetizarlo a voz (Text-to-Speech) o imprimirlo directamente en la consola.
+> 📖 [Leer en Español](README.es.md)
 
----
-
-## 🚀 Arquitectura y Mejoras Realizadas
-
-Hemos llevado a cabo una reestructuración completa del código original enfocado en la estabilidad, rendimiento y buenas prácticas (POO):
-
-1. **Diseño Orientado a Objetos (POO):**
-   * **`AudioBridge` (en `bridge.py`):** Clase encargada de capturar los bloques del micrófono y enviarlos a las colas correspondientes, además de manejar el retorno/reproducción local opcional.
-   * **`AudioProcessor` (en `processor.py`):** Clase que encapsula el modelo de Inteligencia Artificial (Whisper), el búfer de acumulación de audio y el motor de síntesis de voz (`pyttsx3`).
-   * **Exportación de Instancias:** Los archivos exportan directamente las instancias preconfiguradas (`audio_bridge` y `audio_processor`) para simplificar su importación en `main.py`.
-
-2. **Resolución de Conflictos de Audio (Colas de Búfer Elástico):**
-   * Separamos el canal de audio en dos colas separadas (`ia_queue` y `playback_queue`).
-   * **Aumento de la Cola (`maxsize=500`):** Se incrementó la capacidad de `ia_queue` para almacenar hasta 500 fragmentos de audio (aproximadamente 32 segundos). Esto actúa como un búfer elástico acumulando el trabajo pendiente mientras la IA Whisper realiza inferencia en la CPU. Así, **no se pierde ni una sola palabra o frase** cuando el procesador está ocupado.
-
-3. **Estabilidad en Síntesis de Voz (TTS):**
-   * El motor de `pyttsx3` no es seguro para múltiples hilos concurrentes. Se implementó una arquitectura basada en un **hilo de ejecución persistente y exclusivo** (`_worker_voz`) que consume tareas secuenciales de una cola (`voz_queue`), previniendo caídas del programa y fugas de memoria.
-
-4. **Optimización de Latencia y Precisión:**
-   * Establecimos el búfer de procesamiento a **80 bloques (~5.12 segundos)**. Esto proporciona a la IA Whisper el contexto de oraciones completas aumentando drásticamente la fidelidad de la transcripción, a la vez que reduce un 60% el consumo de CPU al realizar inferencias con menor frecuencia.
-
-5. **Modos Dinámicos e Inteligencia de Retorno:**
-   * Soporta modo **`'escritura'`** (solo imprime en terminal, apaga el motor de voz de fondo y mantiene activo el audio original de fondo para que puedas seguir escuchando el vídeo).
-   * Soporta modo **`'voz'`** (lee las traducciones/transcripciones en voz alta y **silencia automáticamente el retorno del audio original** por los altavoces para que escuches únicamente la voz sintetizada de la IA).
-   * Tipado estricto con `typing.Literal` para validación estática en el IDE.
-
-6. **Corrección de Advertencias (FP16 / FP32):**
-   * Importamos `torch` para comprobar dinámicamente si hay una tarjeta gráfica NVIDIA disponible (`torch.cuda.is_available()`). Si se ejecuta en CPU, deshabilita `fp16` automáticamente (`fp16=False`), eliminando las advertencias molestas en la terminal.
+This project is a real-time audio processor designed to capture sound from a virtual audio pipe or loopback device in Ubuntu (for example, audio played from a web browser), transcribe it in Spanish using OpenAI's Whisper model, and optionally read it aloud using Text-to-Speech (TTS) or print it directly to the terminal.
 
 ---
 
-## 🎛️ Configuración de Audio en Ubuntu (Tubería Virtual)
+## 🚀 Architecture & Improvements Made
 
-Para capturar el audio interno del sistema (como un vídeo de YouTube en Firefox o Chrome) y enviarlo al script:
+We have fully refactored the original codebase, focusing on stability, performance, and best practices (OOP):
 
-### 1. Crear el Cable Virtual de Audio (Null Sink)
-En Ubuntu (utilizando PulseAudio o PipeWire), puedes crear un canal de audio virtual ejecutando en tu terminal:
+1. **Object-Oriented Design (OOP):**
+   * **`AudioBridge` (in `bridge.py`):** Handles capturing blocks from the microphone and routing them to the appropriate queues, as well as handling the optional local playback/loopback.
+   * **`AudioProcessor` (in `processor.py`):** Encapsulates the AI model (Whisper), the audio accumulation buffer, and the Text-to-Speech engine (`pyttsx3`).
+   * **Instance Export:** The files directly export preconfigured instances (`audio_bridge` and `audio_processor`) to simplify imports in `main.py`.
+
+2. **Audio Conflict Resolution (Elastic Buffer Queues):**
+   * We separated the audio stream into two distinct queues (`ia_queue` and `playback_queue`).
+   * **Increased Queue Size (`maxsize=500`):** We increased the capacity of `ia_queue` to hold up to 500 audio chunks (approx. 32 seconds). This acts as an elastic buffer that accumulates pending work while the Whisper AI performs inference on the CPU. Consequently, **no words or phrases are lost** when the processor is busy.
+
+3. **Text-to-Speech (TTS) Stability:**
+   * The `pyttsx3` engine is not thread-safe. We implemented a dedicated, persistent worker thread (`_worker_voz`) that consumes tasks sequentially from a queue (`voz_queue`), preventing application crashes and memory leaks.
+
+4. **Latency & Accuracy Optimization:**
+   * We configured the processing buffer to **80 blocks (~5.12 seconds)**. This provides the Whisper AI with full sentence context, dramatically increasing transcription accuracy while reducing CPU usage by 60% due to less frequent inference cycles.
+
+5. **Dynamic Modes & Loopback Muting:**
+   * Supports **`'escritura'`** (writing) mode (only prints to the terminal, disables the TTS background worker to save CPU, and routes the original audio back so you can hear the video).
+   * Supports **`'voz'`** (voice) mode (reads the transcribed/translated text aloud and **automatically mutes the original audio loopback** so you only hear the synthesized voice).
+   * Strict typing using `typing.Literal` for static validation in the IDE.
+
+6. **Warning Resolution (FP16 / FP32):**
+   * We import `torch` to dynamically check if an NVIDIA GPU is available (`torch.cuda.is_available()`). On CPU, it automatically disables `fp16` (`fp16=False`), removing clean-up warnings in the terminal.
+
+---
+
+## 🎛️ Audio Routing in Ubuntu (Virtual Cable)
+
+To capture internal audio (e.g. from a browser playing YouTube) and route it to this script:
+
+### 1. Create a Virtual Audio Cable (Null Sink)
+In Ubuntu (using PulseAudio or PipeWire), run the following command in your terminal:
 ```bash
 pactl load-module module-null-sink sink_name=Virtual_Cable sink_properties=device.description="Virtual_Cable"
 ```
-* Esto creará un dispositivo de salida virtual llamado `Virtual_Cable` y un dispositivo de grabación (monitor) llamado `Virtual_Cable.monitor`.
+* This creates a virtual output device named `Virtual_Cable` and a recording device (monitor) named `Virtual_Cable.monitor`.
 
-### 2. Verificar Dispositivos Creados
-Para inspeccionar y confirmar los dispositivos activos:
-* **Canales de grabación (Entradas):** `pactl list sources short` (buscará `Virtual_Cable.monitor`)
-* **Canales de reproducción (Salidas):** `pactl list sinks short` (buscará `Virtual_Cable`)
+### 2. Verify Created Devices
+Confirm the active devices by running:
+* **Recording sources (Inputs):** `pactl list sources short` (look for `Virtual_Cable.monitor`)
+* **Playback sinks (Outputs):** `pactl list sinks short` (look for `Virtual_Cable`)
 
-### 3. Redirección del Audio
-1. Abre un reproductor o navegador (ej. YouTube).
-2. Ve a la **Configuración de Sonido de Ubuntu** (o usa el comando `pavucontrol` en terminal).
-3. En la pestaña de **Reproducción**, cambia la salida de tu navegador de "Altavoces" a **Virtual_Cable**.
-4. Ahora, todo el sonido del navegador se irá por esa tubería virtual, la cual será capturada por nuestro script a través de `Virtual_Cable.monitor` (dispositivo de entrada por defecto).
+### 3. Route Audio
+1. Play audio from a browser/media player.
+2. Open **Ubuntu Sound Settings** (or run `pavucontrol` in the terminal).
+3. In the **Playback** tab, redirect your browser's audio output to **Virtual_Cable**.
+4. The sound will now route into the virtual pipe and get captured by the script via `Virtual_Cable.monitor` (the default input device).
 
 ---
 
-## 🛠️ Cómo Ejecutar el Proyecto
+## 🛠️ Running the Project
 
-1. **Activar el entorno virtual:**
+1. **Activate the virtual environment:**
    ```bash
    source venv/bin/activate
    ```
-2. **Ejecutar el programa principal:**
+2. **Run the main application:**
    ```bash
    python main.py
    ```
-3. Para cambiar el modo de ejecución (ej. cambiar a modo voz), edita el archivo `main.py` y cambia el argumento `'escritura'` por `'voz'`:
+3. To change modes, edit `main.py` and replace `'escritura'` with `'voz'`:
    ```python
    ia_thread = threading.Thread(target=audio_processor.iniciar, args=(ia_queue, 'voz'), daemon=True)
    ```
