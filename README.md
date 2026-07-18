@@ -80,7 +80,7 @@ Follow these steps to clone and run the project from scratch on your machine:
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/YOUR_USERNAME/WhisperBridge.git
+git clone https://github.com/carlosnaico77/WhisperBridge.git
 cd WhisperBridge
 ```
 
