@@ -13,7 +13,7 @@ if __name__ == "__main__":
     # ▶ modo:  'escritura' (solo consola) o 'voz' (lectura hablada de la transcripción/traducción)
     # ▶ tarea: 'transcribir' (audio español ➔ texto español) o 'traducir' (audio inglés ➔ traducción español)
     modo: ModoProcesador = 'escritura'
-    tarea: TareaProcesador = 'transcribir'
+    tarea: TareaProcesador = 'traducir'
     
     # Arrancamos el procesador de IA en un hilo separado indicando el modo y la tarea
     ia_thread = threading.Thread(target=audio_processor.iniciar, args=(ia_queue, modo, tarea), daemon=True)
