@@ -71,6 +71,20 @@ Para inspeccionar y confirmar los dispositivos activos:
    ```
 ---
 
+## 🛣️ Trabajo Futuro & Requisitos para Avanzar (Roadmap)
+
+La meta a mediano plazo es habilitar la **traducción automática bidireccional (ej. Inglés ➔ Español)**. Para lograrlo y seguir desarrollando en este entorno, se plantean las siguientes pautas:
+
+### 1. Conectores de APIs en la Nube (Groq / OpenAI)
+Para acelerar el procesamiento a milisegundos y usar modelos más potentes (como `Whisper Large-v3`) sin consumir recursos locales de CPU, integraremos llamadas HTTP a las APIs de Groq o OpenAI.
+
+### 🔑 Requisito Crítico: Uso de VPN (Para regiones con bloqueo geográfico como Venezuela)
+Debido a regulaciones y restricciones comerciales de empresas estadounidenses, plataformas como OpenAI y Groq restringen el acceso desde ciertas ubicaciones geográficas (retornando error `Forbidden`).
+*   **Para desarrollar/probar:** Es obligatorio activar una **VPN activa a nivel de sistema operativo** (como ProtonVPN, Windscribe u otra) en la máquina Ubuntu.
+*   **Efecto:** Esto permitirá tanto registrarse y obtener la API Key en las consolas de desarrolladores, como realizar solicitudes HTTP desde el código de Python sin que sean rechazadas por el cortafuegos.
+
+---
+
 ## 💻 Entorno de Pruebas (Especificaciones del Autor)
 
 Este proyecto ha sido desarrollado y probado con éxito bajo el siguiente entorno tecnológico:

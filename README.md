@@ -71,6 +71,20 @@ Confirm the active devices by running:
    ```
 ---
 
+## 🛣️ Future Roadmap & Requirements
+
+The mid-term goal is to enable **real-time bi-directional translation (e.g., English ➔ Spanish)**. To achieve this and continue developing, the following steps are planned:
+
+### 1. Cloud API Integration (Groq / OpenAI)
+To speed up processing to milliseconds and access larger models (like `Whisper Large-v3`) without overloading local CPU resources, we will implement HTTP requests to Groq or OpenAI APIs.
+
+### 🔑 Critical Requirement: VPN Usage (For geoblocked regions like Venezuela)
+Due to US commercial regulations and sanctions, platforms like OpenAI and Groq block requests originating from specific countries (returning a `Forbidden` error).
+*   **To Develop/Test:** It is mandatory to run an **active OS-level VPN** (such as ProtonVPN, Windscribe, etc.) on the Ubuntu host machine.
+*   **Outcome:** This enables both accessing the developer console to obtain API keys and sending HTTP requests from the Python script without being rejected by the platform firewall.
+
+---
+
 ## 💻 Testing Environment (Author's Specifications)
 
 This project has been successfully developed and verified under the following environment:
