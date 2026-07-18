@@ -2,7 +2,17 @@
 
 > 📖 [Leer en Español](README.es.md)
 
-This project is a real-time audio processor designed to capture sound from a virtual audio pipe or loopback device in Ubuntu (for example, audio played from a web browser), transcribe it in Spanish using OpenAI's Whisper model, and optionally read it aloud using Text-to-Speech (TTS) or print it directly to the terminal.
+This project is a real-time audio processor designed to capture sound from any system source in Ubuntu (such as media players like VLC, web browsers, Zoom/Teams calls, or physical microphones), transcribe it using OpenAI's Whisper model, and optionally translate and read it aloud using Text-to-Speech (TTS) or print it styled to the terminal.
+
+---
+
+## 🎯 Project Purpose
+
+WhisperBridge was created with the mission to **eliminate language barriers in both professional and academic settings**. Its primary goal is to empower users to attend meetings, webinars, or work conferences in non-native languages (such as English) and enjoy an accurate, real-time local translation or transcription directly via their terminal or speakers.
+
+### Project Philosophy:
+*   **Extreme Resource Optimization:** Built on the principle of keeping local hardware load to a minimum. By utilizing elastic buffers and execution control queues, audio processing is performed in efficient batches, preventing any interference with operating system performance.
+*   **Future-Proof:** Designed modularly (OOP) so that once more powerful external APIs are integrated, language accuracy will scale exponentially without requiring core architectural changes while maintaining the application's lightweight footprint.
 
 ---
 

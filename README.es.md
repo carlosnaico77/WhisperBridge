@@ -2,7 +2,17 @@
 
 > 📖 [Read in English](README.md)
 
-Este proyecto es un procesador de audio en tiempo real diseñado para capturar sonido proveniente de una tubería o cable virtual de audio en Ubuntu (por ejemplo, el audio reproducido por el navegador web), transcribirlo en español utilizando la IA Whisper de OpenAI, y opcionalmente sintetizarlo a voz (Text-to-Speech) o imprimirlo directamente en la consola.
+Este proyecto es un procesador de audio en tiempo real diseñado para capturar sonido proveniente de cualquier fuente del sistema (reproductores como VLC, navegadores, videollamadas en Zoom/Teams o micrófonos físicos) en Ubuntu, transcribirlo utilizando la IA Whisper de OpenAI, y opcionalmente traducirlo y sintetizarlo a voz (Text-to-Speech) o imprimirlo de manera estilizada en la consola.
+
+---
+
+## 🎯 Propósito del Proyecto
+
+WhisperBridge nace con la misión de **eliminar las barreras idiomáticas en el ámbito laboral y académico**. Su objetivo principal es permitir a personas asistir a reuniones, webinars o conferencias de trabajo en idiomas que no dominan de forma nativa (como el inglés) y disponer de una traducción o transcripción local y precisa en tiempo real directamente en su terminal o altavoces.
+
+### Filosofía del Proyecto:
+*   **Optimización Extrema de Recursos:** Desarrollado bajo la premisa de no saturar el hardware local del usuario. A través de búferes elásticos y colas de control de ejecución, el procesamiento se realiza en lotes eficientes que no interfieren con la fluidez del sistema operativo.
+*   **Preparado para el Futuro:** Diseñado de forma modular (POO) de manera que, al dar el salto a APIs externas más potentes, la exactitud lingüística mejore exponencialmente sin requerir cambios de diseño y conservando la ligereza de la aplicación.
 
 ---
 
