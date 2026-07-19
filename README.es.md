@@ -110,6 +110,21 @@ Inicia el script principal:
 python main.py
 ```
 
+### 6. Configurar el Modo API (Groq Cloud)
+Para obtener transcripciones y traducciones en milisegundos con la máxima precisión (`whisper-large-v3`) sin consumir recursos locales de CPU:
+1. Regístrate gratis en **[Groq Console](https://console.groq.com/)** y genera una **API Key**.
+2. Crea un archivo llamado `.env` en la raíz del proyecto.
+3. Agrega tu API Key dentro del archivo `.env` con la siguiente variable:
+   ```env
+   GROGTOKEN=tu_api_key_de_groq_aqui
+   ```
+4. Asegúrate de configurar la variable `tipo_uso` como `'api'` en tu archivo [main.py](file:///home/clozano/Proyectos/TraductorUbuntu/main.py#L16):
+   ```python
+   tipo_uso: TipoUso = 'api'
+   ```
+   
+> 🔑 **Importante (Restricciones Geográficas / VPN):** Debido a restricciones comerciales, las APIs de Groq y OpenAI bloquean el tráfico de ciertas ubicaciones (como Venezuela), devolviendo un error `Forbidden (403)`. Si este es tu caso, **debes ejecutar una VPN activa a nivel de sistema operativo** (como Proton VPN, que ofrece un plan gratis ilimitado) en tu máquina Ubuntu antes de iniciar el programa.
+
 ---
 
 ## 🛣️ Trabajo Futuro & Requisitos para Avanzar (Roadmap)
