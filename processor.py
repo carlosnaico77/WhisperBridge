@@ -14,6 +14,9 @@ import urllib.request
 import json
 import io
 import wave
+import os
+# pyrefly: ignore [missing-import]
+import requests
 from typing import Literal
 
 # Definición de tipos y contratos de interfaz
@@ -43,6 +46,19 @@ class AudioProcessor:
         
         self.voz_queue = None
         self.thread_voz = None
+        
+        # Cargamos las variables de entorno del archivo .env
+        self._load_env()
+
+    def _load_env(self):
+        """Carga las variables de entorno desde el archivo .env de forma nativa."""
+        if os.path.exists(".env"):
+            with open(".env", "r") as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith("#") and "=" in line:
+                        key, val = line.split("=", 1)
+                        os.environ[key.strip()] = val.strip()
 
     def _worker_voz(self):
         """Hilo dedicado a la síntesis de voz en segundo plano."""
@@ -76,34 +92,51 @@ class AudioProcessor:
             return f"[Error red traducción: {e}] {texto}"
 
     def _transcribir_via_api(self, full_audio: np.ndarray) -> str:
-        """
-        [MÉTODO PLANTILLA] Transcribe audio en la nube (Groq o OpenAI).
-        Descomenta este código e ingresa tu API Key si deseas usar procesamiento externo.
-        """
-        # API_KEY = "TU_API_KEY_AQUI" # Reemplazar con tu token de Groq o OpenAI
-        # PROVIDER = "groq"          # Opciones: "groq" o "openai"
+        """Transcribe audio en la nube consumiendo la API de Groq."""
+        token = os.environ.get("GROGTOKEN", "")
+        if not token:
+            print(f"{ColoresConsola.ROJO}[ERROR]: No se encontró la variable GROGTOKEN en el archivo .env{ColoresConsola.RESET}")
+            return ""
+
+        # 1. Convertir el audio de floats [-1, 1] a enteros PCM de 16 bits en memoria (WAV)
+        audio_int16 = (full_audio * 32767).astype(np.int16)
+        wav_io = io.BytesIO()
+        with wave.open(wav_io, 'wb') as wav_file:
+            wav_file.setnchannels(1)
+            wav_file.setsampwidth(2)
+            wav_file.setframerate(16000)
+            wav_file.writeframes(audio_int16.tobytes())
+        wav_io.seek(0)
         
-        # 1. Convertir el audio de floats [-1, 1] a enteros PCM de 16 bits en memoria
-        # audio_int16 = (full_audio * 32767).astype(np.int16)
-        # wav_io = io.BytesIO()
-        # with wave.open(wav_io, 'wb') as wav_file:
-        #     wav_file.setnchannels(1)
-        #     wav_file.setsampwidth(2)
-        #     wav_file.setframerate(16000)
-        #     wav_file.writeframes(audio_int16.tobytes())
-        # wav_io.seek(0)
+        # 2. Configurar la llamada HTTP multipart para la API de Groq
+        headers = {
+            "Authorization": f"Bearer {token}"
+        }
+        files = {
+            "file": ("audio.wav", wav_io, "audio/wav")
+        }
+        data = {
+            "model": "whisper-large-v3",
+            "language": self.language
+        }
         
-        # 2. Configurar la llamada HTTP multipart para la API seleccionada
-        # url = "https://api.groq.com/openai/v1/audio/transcriptions" if PROVIDER == "groq" else "https://api.openai.com/v1/audio/transcriptions"
-        # model = "whisper-large-v3" if PROVIDER == "groq" else "whisper-1"
-        
-        # Para hacer la petición multipart de forma nativa sin dependencias externas:
-        # (Opcional: usar la librería 'requests' o 'groq' / 'openai' oficiales si están instaladas)
-        # ...
-        
-        # Simulación por consola cuando el código del token no está configurado:
-        print(f"{ColoresConsola.AMARILLO}[API SIMULADA]: Procesando audio en la nube...{ColoresConsola.RESET}")
-        return "Simulación: El usuario debe configurar su token en '_transcribir_via_api()'."
+        try:
+            response = requests.post(
+                "https://api.groq.com/openai/v1/audio/transcriptions",
+                headers=headers,
+                files=files,
+                data=data,
+                timeout=12
+            )
+            if response.status_code == 200:
+                result = response.json()
+                return result.get("text", "").strip()
+            else:
+                print(f"{ColoresConsola.ROJO}[API ERROR {response.status_code}]: {response.text}{ColoresConsola.RESET}")
+                return ""
+        except Exception as e:
+            print(f"{ColoresConsola.ROJO}[API EXCEPTION]: {e}{ColoresConsola.RESET}")
+            return ""
 
     def iniciar(self, audio_queue, modo: ModoProcesador = 'escritura', tarea: TareaProcesador = 'transcribir', tipo_uso: TipoUso = 'local'):
         # Configuración de idioma según la tarea

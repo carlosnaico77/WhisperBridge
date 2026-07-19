@@ -15,7 +15,7 @@ if __name__ == "__main__":
     # ▶ tipo_uso: 'local' (100% privado offline en CPU) o 'api' (procesamiento en la nube usando tokens)
     modo: ModoProcesador = 'escritura'
     tarea: TareaProcesador = 'traducir'
-    tipo_uso: TipoUso = 'local'
+    tipo_uso: TipoUso = 'api'
     
     # Arrancamos el procesador de IA en un hilo separado indicando el modo, la tarea y el tipo de uso
     ia_thread = threading.Thread(target=audio_processor.iniciar, args=(ia_queue, modo, tarea, tipo_uso), daemon=True)
