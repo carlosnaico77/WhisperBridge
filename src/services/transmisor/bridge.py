@@ -27,10 +27,10 @@ class MicBridge:
         self.is_recording = False  # Para modo manual
 
     def find_mic_device(self):
-        """Busca el índice del micrófono USB."""
+        """Busca el índice del micrófono USB excluyendo monitores de salida."""
         devices = sd.query_devices()
         for idx, d in enumerate(devices):
-            if "GeneralPlus" in d['name'] and d['max_input_channels'] > 0:
+            if "GeneralPlus" in d['name'] and "monitor" not in d['name'].lower() and d['max_input_channels'] > 0:
                 return idx
         return sd.default.device[0]
 
