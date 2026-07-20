@@ -10,25 +10,7 @@ La idea es que puedas hablar en español por tu micrófono físico y que los rec
 
 Para que este sistema funcione sin interferencias, debemos separar físicamente lo que captura tu micrófono real de lo que escucha la aplicación de videollamadas.
 
-```text
-  [Tú hablas en Español]
-            │
-            ▼ (Captura física)
-   [Micrófono Físico]
-            │
-            ▼ (Lectura en Python)
-    ┌───────────────┐
-    │ WhisperBridge │ ───(API Groq: Traduce ES ➔ EN)───► [Texto en Inglés]
-    └───────────────┘                                          │
-            ▲                                                  ▼
-            │ (Reproducción virtual)                   [Motor Edge-TTS]
-            │                                                  │
-            ▼                                                  ▼
-     [Virtual_Mic] ◄───────────────────────────────────── [Voz en Inglés]
-            │
-            ▼ (Monitor / Grabación)
-  [Entrada de Zoom/Teams] ───► [El receptor escucha tu voz traducida]
-```
+![Diagrama del Flujo](docs/mic_translation_flow.png)
 
 ---
 
