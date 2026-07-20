@@ -21,9 +21,9 @@ WhisperBridge was created with the mission to **eliminate language barriers in b
 We have fully refactored the original codebase, focusing on stability, performance, and best practices (OOP):
 
 1. **Object-Oriented Design (OOD):**
-   * **`AudioBridge` (in [src/services/bridge.py](file:///home/clozano/Proyectos/TraductorUbuntu/src/services/bridge.py)):** Handles capturing blocks from the microphone and routing them to the appropriate queues, as well as handling the optional local playback/loopback.
-   * **`AudioProcessor` (in [src/services/processor.py](file:///home/clozano/Proyectos/TraductorUbuntu/src/services/processor.py)):** Encapsulates the AI model (Whisper), the audio accumulation buffer, and the Text-to-Speech engine (`pyttsx3`).
-   * **Instance Export:** The files directly export preconfigured instances (`audio_bridge` and `audio_processor`) to simplify imports in `src/main.py`.
+   * **`AudioBridge` (in [src/services/bridge.py](file:///home/clozano/Proyectos/TraductorUbuntu/src/services/bridge.py)):** Handles capturing blocks from the microphone and routing them to the appropriate queues.
+   * **`AudioProcessor` (in [src/services/processor.py](file:///home/clozano/Proyectos/TraductorUbuntu/src/services/processor.py)):** Encapsulates the AI model (Whisper), the audio accumulation buffer, and the Text-to-Speech translation logic.
+   * **`Initiator` (in [src/services/initiator.py](file:///home/clozano/Proyectos/TraductorUbuntu/src/services/initiator.py)):** Coordinator class that orchestrates threading queues, speech synthesis workers, and binds the bridge pipeline to the AI processor. This allows `src/main.py` to serve as a clean startup entry point.
 
 2. **Audio Conflict Resolution (Elastic Buffer Queues):**
    * We separated the audio stream into two distinct queues (`ia_queue` and `playback_queue`).
@@ -118,9 +118,13 @@ To get transcriptions and translations in milliseconds with maximum accuracy (`w
    ```env
    GROGTOKEN=your_groq_api_key_here
    ```
-4. Ensure the `tipo_uso` variable is set to `'api'` in your [main.py](file:///home/clozano/Proyectos/TraductorUbuntu/src/main.py#L16) file:
+4. Ensure you configure the parameters when calling `audio_initiator.iniciar()` in your [src/main.py](file:///home/clozano/Proyectos/TraductorUbuntu/src/main.py#L8) file:
    ```python
-   tipo_uso: TipoUso = 'api'
+   audio_initiator.iniciar(
+       modo='escritura',
+       tarea='traducir',
+       tipo_uso='api'
+   )
    ```
    
 > 🔑 **Important (Geographic Restrictions / VPN):** Due to trade compliance policies, Groq and OpenAI APIs block traffic originating from specific countries (such as Venezuela), returning a `Forbidden (403)` error. If this applies to you, **you must run an active OS-level VPN** (such as Proton VPN, which offers a free unlimited plan) on your Ubuntu machine before running the script to establish the API connection.

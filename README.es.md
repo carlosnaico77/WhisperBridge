@@ -21,9 +21,9 @@ WhisperBridge nace con la misión de **eliminar las barreras idiomáticas en el 
 Hemos llevado a cabo una reestructuración completa del código original enfocado en la estabilidad, rendimiento y buenas prácticas (POO):
 
 1. **Diseño Orientado a Objetos (POO):**
-   * **`AudioBridge` (en [src/services/bridge.py](file:///home/clozano/Proyectos/TraductorUbuntu/src/services/bridge.py)):** Clase encargada de capturar los bloques del micrófono y enviarlos a las colas correspondientes, además de manejar el retorno/reproducción local opcional.
-   * **`AudioProcessor` (en [src/services/processor.py](file:///home/clozano/Proyectos/TraductorUbuntu/src/services/processor.py)):** Clase que encapsula el modelo de Inteligencia Artificial (Whisper), el búfer de acumulación de audio y el motor de síntesis de voz (`pyttsx3`).
-   * **Exportación de Instancias:** Los archivos exportan directamente las instancias preconfiguradas (`audio_bridge` y `audio_processor`) para simplificar su importación en `src/main.py`.
+   * **`AudioBridge` (en [src/services/bridge.py](file:///home/clozano/Proyectos/TraductorUbuntu/src/services/bridge.py)):** Clase encargada de capturar los bloques del micrófono y enviarlos a las colas correspondientes.
+   * **`AudioProcessor` (en [src/services/processor.py](file:///home/clozano/Proyectos/TraductorUbuntu/src/services/processor.py)):** Clase que encapsula el modelo de Inteligencia Artificial (Whisper), el búfer de acumulación de audio y la traducción.
+   * **`Initiator` (en [src/services/initiator.py](file:///home/clozano/Proyectos/TraductorUbuntu/src/services/initiator.py)):** Clase coordinadora que orquesta las colas de hilos, los workers de síntesis de voz y conecta la tubería de audio del puente con la IA. Permite que `src/main.py` actúe como un punto de arranque limpio.
 
 2. **Resolución de Conflictos de Audio (Colas de Búfer Elástico):**
    * Separamos el canal de audio en dos colas separadas (`ia_queue` y `playback_queue`).
@@ -118,9 +118,13 @@ Para obtener transcripciones y traducciones en milisegundos con la máxima preci
    ```env
    GROGTOKEN=tu_api_key_de_groq_aqui
    ```
-4. Asegúrate de configurar la variable `tipo_uso` como `'api'` en tu archivo [main.py](file:///home/clozano/Proyectos/TraductorUbuntu/src/main.py#L16):
+4. Asegúrate de configurar los parámetros en la llamada a `audio_initiator.iniciar()` en tu archivo [src/main.py](file:///home/clozano/Proyectos/TraductorUbuntu/src/main.py#L8):
    ```python
-   tipo_uso: TipoUso = 'api'
+   audio_initiator.iniciar(
+       modo='escritura',
+       tarea='traducir',
+       tipo_uso='api'
+   )
    ```
    
 > 🔑 **Importante (Restricciones Geográficas / VPN):** Debido a restricciones comerciales, las APIs de Groq y OpenAI bloquean el tráfico de ciertas ubicaciones (como Venezuela), devolviendo un error `Forbidden (403)`. Si este es tu caso, **debes ejecutar una VPN activa a nivel de sistema operativo** (como Proton VPN, que ofrece un plan gratis ilimitado) en tu máquina Ubuntu antes de iniciar el programa.
