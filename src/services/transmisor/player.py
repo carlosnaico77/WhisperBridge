@@ -8,6 +8,7 @@ class MicPlayer:
         self.running = False
         self.playback_queue = None
         self.escuchar_retorno = False
+        self.is_playing = False
 
     def iniciar(self, playback_queue: queue.Queue, escuchar_retorno: bool):
         """Inicia el bucle continuo del hilo de reproducción secuencial."""
@@ -23,7 +24,8 @@ class MicPlayer:
                 continue
 
             if os.path.exists(wav_path):
-                print(f"\033[92m🔊 Inyectando fragmento traducido en Virtual_Mic...\033[0m")
+                self.is_playing = True
+                print(f"\n\033[92m🔊 [REPRODUCIENDO] Inyectando voz traducida en Virtual_Mic...\033[0m")
                 
                 if self.escuchar_retorno:
                     # Reproducir en Virtual_Mic en segundo plano
@@ -33,6 +35,8 @@ class MicPlayer:
                 else:
                     # Reproducir únicamente en Virtual_Mic de forma bloqueante
                     os.system(f"paplay --device=Virtual_Mic {wav_path}")
+                
+                self.is_playing = False
                 
                 # Eliminar archivo WAV temporal de forma segura
                 try:

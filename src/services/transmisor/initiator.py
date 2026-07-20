@@ -65,10 +65,20 @@ class TransmitterInitiator:
         try:
             if self.modo == 'manual':
                 while self.running:
-                    input(f"{ColoresConsola.AMARILLO}👉 Presiona ENTER para empezar a hablar (Habla en Español)...{ColoresConsola.RESET}")
+                    # Esperar a que se vacíen las colas del procesamiento previo para no encimar los logs
+                    while not self.translation_queue.empty() or not self.playback_queue.empty() or mic_player.is_playing:
+                        time.sleep(0.1)
+
+                    print(f"\n{ColoresConsola.CIAN}┌────────────────────────────────────────────────────────┐{ColoresConsola.RESET}")
+                    print(f"{ColoresConsola.CIAN}│ [LISTO] El sistema está esperando para grabar.         │{ColoresConsola.RESET}")
+                    print(f"{ColoresConsola.CIAN}└────────────────────────────────────────────────────────┘{ColoresConsola.RESET}")
+                    input(f"{ColoresConsola.AMARILLO}👉 Presiona [ENTER] para empezar a hablar...{ColoresConsola.RESET}")
+                    
                     mic_bridge.iniciar_grabacion()
                     
-                    input(f"{ColoresConsola.VERDE}🎤 Grabando... Presiona ENTER para detener y procesar...{ColoresConsola.RESET}")
+                    print(f"\n{ColoresConsola.VERDE}🔴 [GRABANDO] Capturando tu voz...{ColoresConsola.RESET}")
+                    input(f"{ColoresConsola.VERDE}👉 Presiona [ENTER] cuando termines de hablar para traducir...{ColoresConsola.RESET}")
+                    
                     audio_data = mic_bridge.detener_grabacion()
                     
                     if len(audio_data) == 0:
@@ -77,14 +87,15 @@ class TransmitterInitiator:
                     
                     # Calcular amplitud máxima para depurar si entra sonido
                     amp_max = np.max(np.abs(audio_data))
-                    print(f"{ColoresConsola.GRIS}[DEBUG] Fragmento: {len(audio_data)} muestras, Amplitud Max: {amp_max:.4f}{ColoresConsola.RESET}")
                     
                     # Ignorar si es puro silencio absoluto
                     if amp_max < 0.005:
-                        print(f"{ColoresConsola.ROJO}Audio descartado por ser demasiado silencioso.{ColoresConsola.RESET}\n")
+                        print(f"{ColoresConsola.ROJO}⚠️ Audio descartado por ser demasiado silencioso.{ColoresConsola.RESET}\n")
                         continue
                     
-                    # Encolamos el audio
+                    print(f"\n{ColoresConsola.AMARILLO}⏳ [PROCESANDO] Enviando audio a Groq Cloud y Edge-TTS...{ColoresConsola.RESET}")
+                    
+                    # Encolamos el audio para traducción
                     self.translation_queue.put(audio_data)
             else:
                 # Modo streaming: Escucha continuamente de fondo
