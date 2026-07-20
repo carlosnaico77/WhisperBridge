@@ -112,13 +112,14 @@ class TransmitterInitiator:
                         input(f"{ColoresConsola.AMARILLO}👉 Presiona [ENTER] para ACTIVAR traducción automática (VAD)...{ColoresConsola.RESET}")
                         
                         mic_bridge.iniciar(self.translation_queue, modo='streaming')
+                        mic_bridge.iniciar_streaming()
                         listening = True
                         
                         print(f"\n{ColoresConsola.VERDE}🟢 [ESCUCHANDO AUTOMÁTICO] Habla libremente con pausas naturales.{ColoresConsola.RESET}")
                         print(f"{ColoresConsola.VERDE}👉 Presiona [ENTER] en cualquier momento para PAUSAR el traductor...{ColoresConsola.RESET}\n")
                     else:
                         input()  # Espera a que el usuario presione ENTER para pausar
-                        mic_bridge.detener()
+                        mic_bridge.detener_streaming()
                         listening = False
                         print(f"\n{ColoresConsola.ROJO}⏸️ [PAUSADO] Micrófono desactivado. No se procesará nada más.{ColoresConsola.RESET}")
                     

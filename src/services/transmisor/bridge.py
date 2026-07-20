@@ -1,5 +1,4 @@
 # services/transmisor/bridge.py
-# pyrefly: ignore [missing-import]
 import numpy as np
 # pyrefly: ignore [missing-import]
 import sounddevice as sd
@@ -66,25 +65,39 @@ class MicBridge:
                 self.accumulated_audio.append(audio_chunk)
 
     def iniciar(self, translation_queue: queue.Queue, modo: str = 'manual'):
-        """Inicia el stream de captura."""
+        """Inicializa las colas y configuraciones de modo (sin arrancar streams)."""
         self.translation_queue = translation_queue
         self.modo = modo
         self.accumulated_audio = []
         self.silent_block_count = 0
         self.in_speech = False
         self.is_recording = False
+        self.stream = None
+
+    def iniciar_streaming(self):
+        """Inicia el stream para captura continua VAD (streaming)."""
+        if self.modo != 'streaming':
+            return
+        self.accumulated_audio = []
+        self.silent_block_count = 0
+        self.in_speech = False
         
         mic_idx = self.find_mic_device()
-        
-        # En modo streaming, iniciamos el stream de inmediato
-        if self.modo == 'streaming':
-            self.stream = sd.InputStream(
-                samplerate=self.samplerate,
-                channels=self.channels,
-                device=mic_idx,
-                callback=self._audio_callback
-            )
-            self.stream.start()
+        self.stream = sd.InputStream(
+            samplerate=self.samplerate,
+            channels=self.channels,
+            device=mic_idx,
+            callback=self._audio_callback
+        )
+        self.stream.start()
+
+    def detener_streaming(self):
+        """Detiene el stream de captura continua."""
+        if self.stream:
+            self.stream.stop()
+            self.stream.close()
+            self.stream = None
+        self.accumulated_audio = []
 
     def iniciar_grabacion(self):
         """Inicia la grabación manual (usado en modo manual)."""
@@ -118,7 +131,7 @@ class MicBridge:
         return np.array([], dtype=np.float32)
 
     def detener(self):
-        """Detiene de forma definitiva (principalmente para modo streaming)."""
+        """Detiene de forma definitiva cualquier stream activo."""
         if self.stream:
             self.stream.stop()
             self.stream.close()
