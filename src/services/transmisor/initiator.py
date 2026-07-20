@@ -67,6 +67,15 @@ class TransmitterInitiator:
                     print(f"{ColoresConsola.ROJO}No se capturó audio.{ColoresConsola.RESET}\n")
                     continue
                 
+                # Calcular amplitud máxima para depurar si entra sonido
+                amp_max = np.max(np.abs(audio_data))
+                print(f"{ColoresConsola.GRIS}[DEBUG] Fragmento: {len(audio_data)} muestras, Amplitud Max: {amp_max:.4f}{ColoresConsola.RESET}")
+                
+                # Ignorar si es puro silencio absoluto
+                if amp_max < 0.005:
+                    print(f"{ColoresConsola.ROJO}Audio descartado por ser demasiado silencioso.{ColoresConsola.RESET}\n")
+                    continue
+                
                 # Encolamos el audio capturado para procesamiento en segundo plano
                 self.translation_queue.put(audio_data)
                 
