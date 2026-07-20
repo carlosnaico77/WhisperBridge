@@ -1,5 +1,5 @@
 # main.py
-from services.initiator import audio_initiator
+from services.receptor.initiator import audio_initiator
 
 if __name__ == "__main__":
     # Configuración de ejecución:

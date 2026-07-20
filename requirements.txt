@@ -3,3 +3,5 @@ numpy
 pyttsx3
 sounddevice
 torch
+edge-tts
+soundfile

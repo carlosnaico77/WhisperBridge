@@ -1,8 +1,8 @@
 # services/initiator.py
 import threading
 import queue
-from services.bridge import audio_bridge
-from services.processor import audio_processor, ModoProcesador, TareaProcesador, TipoUso
+from services.receptor.bridge import audio_bridge
+from services.receptor.processor import audio_processor, ModoProcesador, TareaProcesador, TipoUso
 
 class Initiator:
     def __init__(self):
