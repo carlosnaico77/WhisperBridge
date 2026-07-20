@@ -81,7 +81,6 @@ class MicBridge:
             self.stream = sd.InputStream(
                 samplerate=self.samplerate,
                 channels=self.channels,
-                blocksize=self.block_size,
                 device=mic_idx,
                 callback=self._audio_callback
             )
@@ -98,7 +97,6 @@ class MicBridge:
         self.stream = sd.InputStream(
             samplerate=self.samplerate,
             channels=self.channels,
-            blocksize=self.block_size,
             device=mic_idx,
             callback=self._audio_callback
         )
