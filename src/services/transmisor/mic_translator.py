@@ -176,9 +176,18 @@ class MicTranslator:
             return ""
 
     async def synthesize_voice(self, text: str, voice: str = "en-US-AndrewNeural", output_file="temp.mp3"):
-        """Sintetiza texto en inglés a un archivo de voz usando edge-tts."""
-        communicate = edge_tts.Communicate(text, voice)
-        await communicate.save(output_file)
+        """Sintetiza texto en inglés a un archivo de voz usando edge-tts con soporte de reintentos."""
+        intentos_maximos = 3
+        for intento in range(1, intentos_maximos + 1):
+            try:
+                communicate = edge_tts.Communicate(text, voice)
+                await communicate.save(output_file)
+                return
+            except Exception as e:
+                print(f"{ColoresConsola.AMARILLO}[Advertencia]: Intento {intento}/{intentos_maximos} falló ({e}). Reintentando en 2 segundos...{ColoresConsola.RESET}")
+                if intento == intentos_maximos:
+                    raise e
+                await asyncio.sleep(2)
 
 def iniciar_traduccion_mic(escuchar_retorno: bool = False, voz: TipoVoz = "en-US-AndrewNeural"):
     """Ejecuta el bucle de traducción de micrófono virtual de forma interactiva."""
