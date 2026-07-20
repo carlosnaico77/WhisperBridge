@@ -189,6 +189,8 @@ class MicTranslator:
                     raise e
                 await asyncio.sleep(2)
 
+
+
 def iniciar_traduccion_mic(escuchar_retorno: bool = False, voz: TipoVoz = "en-US-AndrewNeural"):
     """Ejecuta el bucle de traducción de micrófono virtual de forma interactiva."""
     print(f"\n{ColoresConsola.CIAN}╔══════════════════════════════════════════════════════════╗{ColoresConsola.RESET}")
@@ -253,41 +255,6 @@ def iniciar_traduccion_mic(escuchar_retorno: bool = False, voz: TipoVoz = "en-US
 
     except KeyboardInterrupt:
         print("\nApagando prototipo de micrófono...")
-
-def probar_voces_masculinas():
-    """Función de prueba para escuchar secuencialmente las voces masculinas del catálogo."""
-    texto = (
-        "Hi, my name is Carlos Lozano, I am a Full-Stack developer with more than 3 years of experience. "
-        "Currently I am looking for an opportunity in the international market to improve my professional profile and my life. "
-        "I am in the market of Venezuela where it is a bit difficult because some technologies are restricted and you have to use VPN, "
-        "which makes things difficult but I'm willing to put my little grain of sand to improve productivity and automate the processes that the company requires."
-    )
-    
-    translator = MicTranslator()
-    
-    print(f"\n{ColoresConsola.CIAN}╔══════════════════════════════════════════════════════════╗{ColoresConsola.RESET}")
-    print(f"{ColoresConsola.CIAN}║         AUDICIÓN DE VOCES MASCULINAS (EDGE-TTS)          ║{ColoresConsola.RESET}")
-    print(f"{ColoresConsola.CIAN}╚══════════════════════════════════════════════════════════╝{ColoresConsola.RESET}")
-
-    for nombre, voz_id in VOCES_DISPONIBLES["MASCULINAS"].items():
-        print(f"\n📢 {ColoresConsola.VERDE}Probando voz: {ColoresConsola.BLANCO_NEGRITA}{nombre.upper()}{ColoresConsola.RESET} ({voz_id})...")
-        
-        asyncio.run(translator.synthesize_voice(texto, voz_id, "temp_test.mp3"))
-        
-        # Convertimos MP3 a WAV con ffmpeg
-        os.system("ffmpeg -y -i temp_test.mp3 temp_test.wav >/dev/null 2>&1")
-
-        if os.path.exists("temp_test.wav"):
-            print(f"🔊 {ColoresConsola.AMARILLO}Escuchando en auriculares...{ColoresConsola.RESET}")
-            os.system("paplay temp_test.wav")
-            
-            # Limpiamos
-            os.remove("temp_test.mp3")
-            os.remove("temp_test.wav")
-        else:
-            print(f"{ColoresConsola.ROJO}Error al generar audio para {nombre}{ColoresConsola.RESET}")
-
-    print(f"\n{ColoresConsola.VERDE}✨ Fin de la audición de voces.{ColoresConsola.RESET}\n")
 
 if __name__ == "__main__":
     iniciar_traduccion_mic()
