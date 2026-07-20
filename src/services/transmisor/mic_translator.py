@@ -13,6 +13,35 @@ import asyncio
 # pyrefly: ignore [missing-import]
 import edge_tts
 
+from typing import Literal
+
+# Definimos las mejores voces disponibles en inglés americano (US)
+TipoVoz = Literal[
+    'en-US-AndrewNeural',       # Masculino (Por defecto, profesional)
+    'en-US-BrianNeural',        # Masculino (Grave, natural)
+    'en-US-ChristopherNeural',  # Masculino (Conversacional)
+    'en-US-EricNeural',         # Masculino (Corporativo)
+    'en-US-EmmaNeural',         # Femenino (Claro, profesional)
+    'en-US-AvaNeural',          # Femenino (Enérgico)
+    'en-US-JennyNeural',        # Femenino (Nítido, estándar)
+    'en-US-MichelleNeural'      # Femenino (Suave)
+]
+
+VOCES_DISPONIBLES = {
+    "MASCULINAS": {
+        "andrew": "en-US-AndrewNeural",
+        "brian": "en-US-BrianNeural",
+        "christopher": "en-US-ChristopherNeural",
+        "eric": "en-US-EricNeural"
+    },
+    "FEMENINAS": {
+        "emma": "en-US-EmmaNeural",
+        "ava": "en-US-AvaNeural",
+        "jenny": "en-US-JennyNeural",
+        "michelle": "en-US-MichelleNeural"
+    }
+}
+
 # Códigos de color ANSI para la terminal
 class ColoresConsola:
     VERDE = '\033[92m'
@@ -146,13 +175,12 @@ class MicTranslator:
             print(f"{ColoresConsola.ROJO}[API EXCEPTION]: {e}{ColoresConsola.RESET}")
             return ""
 
-    async def synthesize_voice(self, text: str, output_file="temp.mp3"):
+    async def synthesize_voice(self, text: str, voice: str = "en-US-AndrewNeural", output_file="temp.mp3"):
         """Sintetiza texto en inglés a un archivo de voz usando edge-tts."""
-        voice = "en-US-AndrewNeural"
         communicate = edge_tts.Communicate(text, voice)
         await communicate.save(output_file)
 
-def iniciar_traduccion_mic(escuchar_retorno: bool = False):
+def iniciar_traduccion_mic(escuchar_retorno: bool = False, voz: TipoVoz = "en-US-AndrewNeural"):
     """Ejecuta el bucle de traducción de micrófono virtual de forma interactiva."""
     print(f"\n{ColoresConsola.CIAN}╔══════════════════════════════════════════════════════════╗{ColoresConsola.RESET}")
     print(f"{ColoresConsola.CIAN}║       PROTOTIPO: TRADUCTOR DE MICRÓFONO (VIRTUAL MIC)    ║{ColoresConsola.RESET}")
@@ -164,6 +192,7 @@ def iniciar_traduccion_mic(escuchar_retorno: bool = False):
     devices = sd.query_devices()
     print(f"{ColoresConsola.VERDE}▶ Micrófono de entrada:  {ColoresConsola.BLANCO_NEGRITA}{devices[mic_idx]['name']} (Index {mic_idx}){ColoresConsola.RESET}")
     print(f"{ColoresConsola.VERDE}▶ Tubería de salida:      {ColoresConsola.BLANCO_NEGRITA}{devices[output_idx]['name']} (Index {output_idx}){ColoresConsola.RESET}")
+    print(f"{ColoresConsola.VERDE}▶ Voz seleccionada:       {ColoresConsola.BLANCO_NEGRITA}{voz}{ColoresConsola.RESET}")
     print(f"{ColoresConsola.VERDE}▶ Retorno en auriculares: {ColoresConsola.BLANCO_NEGRITA}{'ACTIVO' if escuchar_retorno else 'DESACTIVADO'}{ColoresConsola.RESET}")
     print(f"{ColoresConsola.CIAN}────────────────────────────────────────────────────────────{ColoresConsola.RESET}\n")
 
@@ -189,7 +218,7 @@ def iniciar_traduccion_mic(escuchar_retorno: bool = False):
             print(f"{ColoresConsola.CIAN}📝 [TRADUCCIÓN AL INGLÉS]:{ColoresConsola.RESET} {ColoresConsola.BLANCO_NEGRITA}{english_text}{ColoresConsola.RESET}")
 
             print(f"{ColoresConsola.AMARILLO}Generando voz humana (Edge-TTS)...{ColoresConsola.RESET}")
-            asyncio.run(translator.synthesize_voice(english_text, "temp.mp3"))
+            asyncio.run(translator.synthesize_voice(english_text, voice, "temp.mp3"))
 
             # Convertimos MP3 a WAV de forma limpia usando ffmpeg
             os.system("ffmpeg -y -i temp.mp3 temp.wav >/dev/null 2>&1")
