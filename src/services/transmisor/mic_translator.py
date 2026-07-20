@@ -2,6 +2,7 @@
 import os
 import io
 import wave
+# pyrefly: ignore [missing-import]
 import numpy as np
 # pyrefly: ignore [missing-import]
 import sounddevice as sd
@@ -195,9 +196,8 @@ def iniciar_traduccion_mic():
             if os.path.exists("temp.wav"):
                 print(f"{ColoresConsola.VERDE}🔊 Inyectando voz traducida en Virtual_Mic...{ColoresConsola.RESET}")
                 
-                data, fs = sf.read("temp.wav")
-                sd.play(data, fs, device=output_idx)
-                sd.wait()
+                # Usamos paplay nativo de Linux que gestiona y despierta automáticamente la tubería virtual
+                os.system(f"paplay --device=Virtual_Mic temp.wav")
                 
                 print(f"{ColoresConsola.GRIS}Listo para la siguiente frase.{ColoresConsola.RESET}\n")
                 
