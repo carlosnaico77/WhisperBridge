@@ -11,4 +11,4 @@ if __name__ == "__main__":
     # )
 
     # Canal Saliente (Captura tu micrófono en Español, traduce e inyecta inglés en Virtual_Mic)
-    iniciar_traduccion_mic()
+    iniciar_traduccion_mic(escuchar_retorno=True)

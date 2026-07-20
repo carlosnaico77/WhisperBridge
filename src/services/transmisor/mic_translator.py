@@ -152,7 +152,7 @@ class MicTranslator:
         communicate = edge_tts.Communicate(text, voice)
         await communicate.save(output_file)
 
-def iniciar_traduccion_mic():
+def iniciar_traduccion_mic(escuchar_retorno: bool = False):
     """Ejecuta el bucle de traducción de micrófono virtual de forma interactiva."""
     print(f"\n{ColoresConsola.CIAN}╔══════════════════════════════════════════════════════════╗{ColoresConsola.RESET}")
     print(f"{ColoresConsola.CIAN}║       PROTOTIPO: TRADUCTOR DE MICRÓFONO (VIRTUAL MIC)    ║{ColoresConsola.RESET}")
@@ -164,6 +164,7 @@ def iniciar_traduccion_mic():
     devices = sd.query_devices()
     print(f"{ColoresConsola.VERDE}▶ Micrófono de entrada:  {ColoresConsola.BLANCO_NEGRITA}{devices[mic_idx]['name']} (Index {mic_idx}){ColoresConsola.RESET}")
     print(f"{ColoresConsola.VERDE}▶ Tubería de salida:      {ColoresConsola.BLANCO_NEGRITA}{devices[output_idx]['name']} (Index {output_idx}){ColoresConsola.RESET}")
+    print(f"{ColoresConsola.VERDE}▶ Retorno en auriculares: {ColoresConsola.BLANCO_NEGRITA}{'ACTIVO' if escuchar_retorno else 'DESACTIVADO'}{ColoresConsola.RESET}")
     print(f"{ColoresConsola.CIAN}────────────────────────────────────────────────────────────{ColoresConsola.RESET}\n")
 
     try:
@@ -196,8 +197,14 @@ def iniciar_traduccion_mic():
             if os.path.exists("temp.wav"):
                 print(f"{ColoresConsola.VERDE}🔊 Inyectando voz traducida en Virtual_Mic...{ColoresConsola.RESET}")
                 
-                # Usamos paplay nativo de Linux que gestiona y despierta automáticamente la tubería virtual
-                os.system(f"paplay --device=Virtual_Mic temp.wav")
+                if escuchar_retorno:
+                    # Reproducir en la tubería virtual en segundo plano
+                    os.system("paplay --device=Virtual_Mic temp.wav &")
+                    # Reproducir en tus auriculares físicos en primer plano (bloqueante)
+                    os.system("paplay temp.wav")
+                else:
+                    # Reproducir únicamente en el micrófono virtual de forma bloqueante
+                    os.system("paplay --device=Virtual_Mic temp.wav")
                 
                 print(f"{ColoresConsola.GRIS}Listo para la siguiente frase.{ColoresConsola.RESET}\n")
                 
