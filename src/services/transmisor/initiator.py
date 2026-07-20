@@ -2,6 +2,8 @@
 import threading
 import queue
 import time
+# pyrefly: ignore [missing-import]
+import numpy as np
 from services.transmisor.bridge import mic_bridge
 from services.transmisor.processor import mic_processor
 from services.transmisor.player import mic_player
