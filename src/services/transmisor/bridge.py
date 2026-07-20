@@ -1,4 +1,5 @@
 # services/transmisor/bridge.py
+# pyrefly: ignore [missing-import]
 import numpy as np
 # pyrefly: ignore [missing-import]
 import sounddevice as sd
