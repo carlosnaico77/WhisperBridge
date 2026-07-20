@@ -66,7 +66,7 @@ class TransmitterInitiator:
             if self.modo == 'manual':
                 while self.running:
                     # Esperar a que se vacíen las colas del procesamiento previo para no encimar los logs
-                    while not self.translation_queue.empty() or not self.playback_queue.empty() or mic_player.is_playing:
+                    while not self.translation_queue.empty() or not self.playback_queue.empty() or mic_processor.is_processing or mic_player.is_playing:
                         time.sleep(0.1)
 
                     print(f"\n{ColoresConsola.CIAN}┌────────────────────────────────────────────────────────┐{ColoresConsola.RESET}")

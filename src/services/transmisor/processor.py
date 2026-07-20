@@ -47,6 +47,7 @@ class MicProcessor:
         self.translation_queue = None
         self.playback_queue = None
         self.voz = "en-US-AndrewNeural"
+        self.is_processing = False
 
     def load_env(self):
         """Carga variables del archivo .env."""
@@ -140,9 +141,12 @@ class MicProcessor:
             except queue.Empty:
                 continue
 
+            self.is_processing = True
+
             # Traducir con Groq
             english_text = self.translate_audio(audio_data)
             if not english_text:
+                self.is_processing = False
                 continue
 
             print(f"\033[96m📝 [TRADUCCIÓN AL INGLÉS]:\033[0m \033[1m{english_text}\033[0m")
@@ -169,6 +173,8 @@ class MicProcessor:
                     print("\033[91m[ERROR]: Falló conversión WAV de fragmento.\033[0m")
             except Exception as e:
                 print(f"\033[91m[ERROR]: Falló síntesis de fragmento: {e}\033[0m")
+            finally:
+                self.is_processing = False
 
     def detener(self):
         """Apaga el procesador."""
