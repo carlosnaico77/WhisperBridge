@@ -1,6 +1,6 @@
 # main.py
 from services.receptor.initiator import audio_initiator
-from services.transmisor.mic_translator import iniciar_traduccion_mic, VOCES_DISPONIBLES
+from services.transmisor.initiator import transmitter_initiator, VOCES_DISPONIBLES
 
 if __name__ == "__main__":
     # Canal Entrante (Escucha y traduce audio de videollamada al Español)
@@ -17,4 +17,4 @@ if __name__ == "__main__":
     voz_seleccionada = VOCES_DISPONIBLES['MASCULINAS']['andrew']
 
     # Canal Saliente (Captura tu micrófono en Español, traduce e inyecta inglés en Virtual_Mic)
-    iniciar_traduccion_mic(escuchar_retorno=True, voz=voz_seleccionada)
+    transmitter_initiator.iniciar(escuchar_retorno=True, voz=voz_seleccionada)
