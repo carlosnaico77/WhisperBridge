@@ -21,8 +21,8 @@ WhisperBridge nace con la misión de **eliminar las barreras idiomáticas en el 
 Hemos llevado a cabo una reestructuración completa del código original enfocado en la estabilidad, rendimiento y buenas prácticas (POO):
 
 1. **Diseño Orientado a Objetos (POO):**
-   * **`AudioBridge` (en [src/bridge.py](file:///home/clozano/Proyectos/TraductorUbuntu/src/bridge.py)):** Clase encargada de capturar los bloques del micrófono y enviarlos a las colas correspondientes, además de manejar el retorno/reproducción local opcional.
-   * **`AudioProcessor` (en [src/processor.py](file:///home/clozano/Proyectos/TraductorUbuntu/src/processor.py)):** Clase que encapsula el modelo de Inteligencia Artificial (Whisper), el búfer de acumulación de audio y el motor de síntesis de voz (`pyttsx3`).
+   * **`AudioBridge` (en [src/services/bridge.py](file:///home/clozano/Proyectos/TraductorUbuntu/src/services/bridge.py)):** Clase encargada de capturar los bloques del micrófono y enviarlos a las colas correspondientes, además de manejar el retorno/reproducción local opcional.
+   * **`AudioProcessor` (en [src/services/processor.py](file:///home/clozano/Proyectos/TraductorUbuntu/src/services/processor.py)):** Clase que encapsula el modelo de Inteligencia Artificial (Whisper), el búfer de acumulación de audio y el motor de síntesis de voz (`pyttsx3`).
    * **Exportación de Instancias:** Los archivos exportan directamente las instancias preconfiguradas (`audio_bridge` y `audio_processor`) para simplificar su importación en `src/main.py`.
 
 2. **Resolución de Conflictos de Audio (Colas de Búfer Elástico):**
@@ -46,7 +46,7 @@ Hemos llevado a cabo una reestructuración completa del código original enfocad
 7. **Flexibilidad de Ejecución (Local vs API Cloud):**
    * Se incorporó el parámetro `tipo_uso: TipoUso`.
    * **`'local'`**: Máxima privacidad. Carga Whisper en el hardware local.
-   * **`'api'`**: Optimización máxima de hardware. Delega la transcripción a la nube. El archivo [src/processor.py](file:///home/clozano/Proyectos/TraductorUbuntu/src/processor.py) incluye el método plantilla `_transcribir_via_api` comentando la conversión a WAV en memoria y cómo estructurar la petición HTTP para que el usuario coloque su clave de API.
+   * **`'api'`**: Optimización máxima de hardware. Delega la transcripción a la nube. El archivo [src/services/processor.py](file:///home/clozano/Proyectos/TraductorUbuntu/src/services/processor.py) incluye el método plantilla `_transcribir_via_api` comentando la conversión a WAV en memoria y cómo estructurar la petición HTTP para que el usuario coloque su clave de API.
 
 ---
 

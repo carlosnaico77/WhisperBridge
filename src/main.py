@@ -1,8 +1,8 @@
 # main.py
 import threading
 import queue
-from bridge import audio_bridge
-from processor import audio_processor, ModoProcesador, TareaProcesador, TipoUso
+from services.bridge import audio_bridge
+from services.processor import audio_processor, ModoProcesador, TareaProcesador, TipoUso
 
 if __name__ == "__main__":
     # Aumentamos el tamaño máximo para acumular audio y evitar pérdidas mientras la IA procesa
