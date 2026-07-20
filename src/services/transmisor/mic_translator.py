@@ -24,7 +24,6 @@ class ColoresConsola:
 
 def load_env():
     """Carga variables del archivo .env en la raíz del proyecto."""
-    # Buscamos el archivo .env subiendo niveles si es necesario
     env_path = ".env"
     if not os.path.exists(env_path) and os.path.exists("../../../.env"):
         env_path = "../../../.env"
@@ -56,24 +55,19 @@ class MicTranslator:
         output_idx = None
 
         for idx, d in enumerate(devices):
-            # Buscamos el micrófono USB
             if "GeneralPlus" in d['name'] and d['max_input_channels'] > 0:
                 mic_idx = idx
-            # Buscamos la tubería de salida virtual
             if "Virtual_Mic" in d['name'] and d['max_output_channels'] > 0:
                 output_idx = idx
 
-        # Fallbacks si no se detecta la palabra clave
+        # Fallbacks
         if mic_idx is None:
-            # Usar micrófono predeterminado del sistema
             mic_idx = sd.default.device[0]
         if output_idx is None:
-            # Buscar cualquier dispositivo de salida con Virtual_Mic
             for idx, d in enumerate(devices):
                 if "Virtual_Mic" in d['name'] and d['max_output_channels'] > 0:
                     output_idx = idx
                     break
-            # Si aún es None, reproducir en la salida por defecto
             if output_idx is None:
                 output_idx = sd.default.device[1]
 
@@ -114,7 +108,6 @@ class MicTranslator:
             print(f"{ColoresConsola.ROJO}[ERROR]: No se encontró GROGTOKEN en el archivo .env{ColoresConsola.RESET}")
             return ""
 
-        # Convertir a WAV PCM 16 bits en memoria
         audio_int16 = (audio_data * 32767).astype(np.int16)
         wav_io = io.BytesIO()
         with wave.open(wav_io, 'wb') as wav_file:
@@ -136,7 +129,6 @@ class MicTranslator:
         }
 
         try:
-            # El endpoint de traducción de Groq traduce automáticamente cualquier audio a inglés
             response = requests.post(
                 "https://api.groq.com/openai/v1/audio/translations",
                 headers=headers,
@@ -155,12 +147,12 @@ class MicTranslator:
 
     async def synthesize_voice(self, text: str, output_file="temp.mp3"):
         """Sintetiza texto en inglés a un archivo de voz usando edge-tts."""
-        # Usamos una voz nativa americana bastante natural
         voice = "en-US-AndrewNeural"
         communicate = edge_tts.Communicate(text, voice)
         await communicate.save(output_file)
 
-if __name__ == "__main__":
+def iniciar_traduccion_mic():
+    """Ejecuta el bucle de traducción de micrófono virtual de forma interactiva."""
     print(f"\n{ColoresConsola.CIAN}╔══════════════════════════════════════════════════════════╗{ColoresConsola.RESET}")
     print(f"{ColoresConsola.CIAN}║       PROTOTIPO: TRADUCTOR DE MICRÓFONO (VIRTUAL MIC)    ║{ColoresConsola.RESET}")
     print(f"{ColoresConsola.CIAN}╚══════════════════════════════════════════════════════════╝{ColoresConsola.RESET}")
@@ -203,14 +195,12 @@ if __name__ == "__main__":
             if os.path.exists("temp.wav"):
                 print(f"{ColoresConsola.VERDE}🔊 Inyectando voz traducida en Virtual_Mic...{ColoresConsola.RESET}")
                 
-                # Leemos el archivo WAV generado y lo reproducimos en el Virtual_Mic
                 data, fs = sf.read("temp.wav")
                 sd.play(data, fs, device=output_idx)
-                sd.wait() # Esperar a que termine de reproducir
+                sd.wait()
                 
                 print(f"{ColoresConsola.GRIS}Listo para la siguiente frase.{ColoresConsola.RESET}\n")
                 
-                # Limpiamos archivos temporales
                 os.remove("temp.mp3")
                 os.remove("temp.wav")
             else:
@@ -218,3 +208,6 @@ if __name__ == "__main__":
 
     except KeyboardInterrupt:
         print("\nApagando prototipo de micrófono...")
+
+if __name__ == "__main__":
+    iniciar_traduccion_mic()

@@ -1,13 +1,14 @@
 # main.py
 from services.receptor.initiator import audio_initiator
+from services.transmisor.mic_translator import iniciar_traduccion_mic
 
 if __name__ == "__main__":
-    # Configuración de ejecución:
-    # ▶ modo:     'escritura' (solo consola) o 'voz' (lectura hablada de la transcripción/traducción)
-    # ▶ tarea:    'transcribir' (audio español ➔ texto español) o 'traducir' (audio inglés ➔ traducción español)
-    # ▶ tipo_uso: 'local' (100% privado offline en CPU) o 'api' (procesamiento en la nube usando tokens)
-    audio_initiator.iniciar(
-        modo='escritura',
-        tarea='traducir',
-        tipo_uso='api'
-    )
+    # Canal Entrante (Escucha y traduce audio de videollamada al Español)
+    # audio_initiator.iniciar(
+    #     modo='escritura',
+    #     tarea='traducir',
+    #     tipo_uso='api'
+    # )
+
+    # Canal Saliente (Captura tu micrófono en Español, traduce e inyecta inglés en Virtual_Mic)
+    iniciar_traduccion_mic()
