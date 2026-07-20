@@ -218,7 +218,7 @@ def iniciar_traduccion_mic(escuchar_retorno: bool = False, voz: TipoVoz = "en-US
             print(f"{ColoresConsola.CIAN}📝 [TRADUCCIÓN AL INGLÉS]:{ColoresConsola.RESET} {ColoresConsola.BLANCO_NEGRITA}{english_text}{ColoresConsola.RESET}")
 
             print(f"{ColoresConsola.AMARILLO}Generando voz humana (Edge-TTS)...{ColoresConsola.RESET}")
-            asyncio.run(translator.synthesize_voice(english_text, voice, "temp.mp3"))
+            asyncio.run(translator.synthesize_voice(english_text, voz, "temp.mp3"))
 
             # Convertimos MP3 a WAV de forma limpia usando ffmpeg
             os.system("ffmpeg -y -i temp.mp3 temp.wav >/dev/null 2>&1")
