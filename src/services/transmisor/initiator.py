@@ -98,11 +98,29 @@ class TransmitterInitiator:
                     # Encolamos el audio para traducción
                     self.translation_queue.put(audio_data)
             else:
-                # Modo streaming: Escucha continuamente de fondo
-                print(f"{ColoresConsola.AMARILLO}¡Listo! Escuchando micrófono de forma continua...{ColoresConsola.RESET}")
-                print(f"{ColoresConsola.GRIS}Habla libremente con pausas naturales. Presiona CTRL+C para salir.{ColoresConsola.RESET}\n")
+                # Modo streaming interactivo (Escucha continua con botón de pausa/activación)
+                listening = False
                 while self.running:
-                    time.sleep(0.5)
+                    if not listening:
+                        # Esperar a que se vacíen las colas antes de volver a activar para evitar solapamientos
+                        while not self.translation_queue.empty() or not self.playback_queue.empty() or mic_processor.is_processing or mic_player.is_playing:
+                            time.sleep(0.1)
+
+                        print(f"\n{ColoresConsola.CIAN}┌────────────────────────────────────────────────────────┐{ColoresConsola.RESET}")
+                        print(f"{ColoresConsola.CIAN}│ [PAUSADO] El traductor automático está apagado.        │{ColoresConsola.RESET}")
+                        print(f"{ColoresConsola.CIAN}└────────────────────────────────────────────────────────┘{ColoresConsola.RESET}")
+                        input(f"{ColoresConsola.AMARILLO}👉 Presiona [ENTER] para ACTIVAR traducción automática (VAD)...{ColoresConsola.RESET}")
+                        
+                        mic_bridge.iniciar(self.translation_queue, modo='streaming')
+                        listening = True
+                        
+                        print(f"\n{ColoresConsola.VERDE}🟢 [ESCUCHANDO AUTOMÁTICO] Habla libremente con pausas naturales.{ColoresConsola.RESET}")
+                        print(f"{ColoresConsola.VERDE}👉 Presiona [ENTER] en cualquier momento para PAUSAR el traductor...{ColoresConsola.RESET}\n")
+                    else:
+                        input()  # Espera a que el usuario presione ENTER para pausar
+                        mic_bridge.detener()
+                        listening = False
+                        print(f"\n{ColoresConsola.ROJO}⏸️ [PAUSADO] Micrófono desactivado. No se procesará nada más.{ColoresConsola.RESET}")
                     
         except KeyboardInterrupt:
             print(f"\n{ColoresConsola.AMARILLO}Apagando traductor de micrófono...{ColoresConsola.RESET}")
