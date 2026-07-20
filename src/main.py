@@ -16,5 +16,10 @@ if __name__ == "__main__":
     
     voz_seleccionada = VOCES_DISPONIBLES['MASCULINAS']['andrew']
 
+    # Modo de transmisión:
+    # ▶ 'manual': Graba y traduce al presionar ENTER
+    # ▶ 'streaming': Graba continuamente y traduce en base a pausas de silencio
+    modo_transmision = 'manual'
+
     # Canal Saliente (Captura tu micrófono en Español, traduce e inyecta inglés en Virtual_Mic)
-    transmitter_initiator.iniciar(escuchar_retorno=True, voz=voz_seleccionada)
+    transmitter_initiator.iniciar(escuchar_retorno=True, voz=voz_seleccionada, modo=modo_transmision)

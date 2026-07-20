@@ -9,7 +9,6 @@ from services.transmisor.processor import mic_processor
 from services.transmisor.player import mic_player
 from services.transmisor.processor import TipoVoz, VOCES_DISPONIBLES
 
-# Códigos de color ANSI para la terminal
 class ColoresConsola:
     VERDE = '\033[92m'
     CIAN = '\033[96m'
@@ -26,11 +25,14 @@ class TransmitterInitiator:
         self.processor_thread = None
         self.player_thread = None
         self.running = False
+        self.modo = 'manual'
 
-    def iniciar(self, escuchar_retorno: bool = False, voz: TipoVoz = "en-US-AndrewNeural"):
+    def iniciar(self, escuchar_retorno: bool = False, voz: TipoVoz = "en-US-AndrewNeural", modo: str = "manual"):
         """Orquesta e inicia las colas y los hilos para el canal saliente."""
+        self.modo = modo
+        
         print(f"\n{ColoresConsola.CIAN}╔══════════════════════════════════════════════════════════╗{ColoresConsola.RESET}")
-        print(f"{ColoresConsola.CIAN}║         INICIANDO TRADUCTOR DE MICRÓFONO (MANUAL)        ║{ColoresConsola.RESET}")
+        print(f"{ColoresConsola.CIAN}║         INICIANDO TRADUCTOR DE MICRÓFONO ({self.modo.upper()})        ║{ColoresConsola.RESET}")
         print(f"{ColoresConsola.CIAN}╚══════════════════════════════════════════════════════════╝{ColoresConsola.RESET}")
         print(f"{ColoresConsola.VERDE}▶ Voz seleccionada:       {ColoresConsola.BLANCO_NEGRITA}{voz}{ColoresConsola.RESET}")
         print(f"{ColoresConsola.VERDE}▶ Retorno en auriculares: {ColoresConsola.BLANCO_NEGRITA}{'ACTIVO' if escuchar_retorno else 'DESACTIVADO'}{ColoresConsola.RESET}")
@@ -56,31 +58,41 @@ class TransmitterInitiator:
         )
         self.player_thread.start()
 
-        # 3. Control manual interactivo mediante ENTER en el hilo principal
+        # 3. Iniciar puente
+        mic_bridge.iniciar(self.translation_queue, modo=self.modo)
+
+        # 4. Control de hilo principal según el modo
         try:
-            while self.running:
-                input(f"{ColoresConsola.AMARILLO}👉 Presiona ENTER para empezar a hablar (Habla en Español)...{ColoresConsola.RESET}")
-                mic_bridge.iniciar_grabacion()
-                
-                input(f"{ColoresConsola.VERDE}🎤 Grabando... Presiona ENTER para detener y procesar...{ColoresConsola.RESET}")
-                audio_data = mic_bridge.detener_grabacion()
-                
-                if len(audio_data) == 0:
-                    print(f"{ColoresConsola.ROJO}No se capturó audio.{ColoresConsola.RESET}\n")
-                    continue
-                
-                # Calcular amplitud máxima para depurar si entra sonido
-                amp_max = np.max(np.abs(audio_data))
-                print(f"{ColoresConsola.GRIS}[DEBUG] Fragmento: {len(audio_data)} muestras, Amplitud Max: {amp_max:.4f}{ColoresConsola.RESET}")
-                
-                # Ignorar si es puro silencio absoluto
-                if amp_max < 0.005:
-                    print(f"{ColoresConsola.ROJO}Audio descartado por ser demasiado silencioso.{ColoresConsola.RESET}\n")
-                    continue
-                
-                # Encolamos el audio capturado para procesamiento en segundo plano
-                self.translation_queue.put(audio_data)
-                
+            if self.modo == 'manual':
+                while self.running:
+                    input(f"{ColoresConsola.AMARILLO}👉 Presiona ENTER para empezar a hablar (Habla en Español)...{ColoresConsola.RESET}")
+                    mic_bridge.iniciar_grabacion()
+                    
+                    input(f"{ColoresConsola.VERDE}🎤 Grabando... Presiona ENTER para detener y procesar...{ColoresConsola.RESET}")
+                    audio_data = mic_bridge.detener_grabacion()
+                    
+                    if len(audio_data) == 0:
+                        print(f"{ColoresConsola.ROJO}No se capturó audio.{ColoresConsola.RESET}\n")
+                        continue
+                    
+                    # Calcular amplitud máxima para depurar si entra sonido
+                    amp_max = np.max(np.abs(audio_data))
+                    print(f"{ColoresConsola.GRIS}[DEBUG] Fragmento: {len(audio_data)} muestras, Amplitud Max: {amp_max:.4f}{ColoresConsola.RESET}")
+                    
+                    # Ignorar si es puro silencio absoluto
+                    if amp_max < 0.005:
+                        print(f"{ColoresConsola.ROJO}Audio descartado por ser demasiado silencioso.{ColoresConsola.RESET}\n")
+                        continue
+                    
+                    # Encolamos el audio
+                    self.translation_queue.put(audio_data)
+            else:
+                # Modo streaming: Escucha continuamente de fondo
+                print(f"{ColoresConsola.AMARILLO}¡Listo! Escuchando micrófono de forma continua...{ColoresConsola.RESET}")
+                print(f"{ColoresConsola.GRIS}Habla libremente con pausas naturales. Presiona CTRL+C para salir.{ColoresConsola.RESET}\n")
+                while self.running:
+                    time.sleep(0.5)
+                    
         except KeyboardInterrupt:
             print(f"\n{ColoresConsola.AMARILLO}Apagando traductor de micrófono...{ColoresConsola.RESET}")
         finally:
@@ -89,7 +101,7 @@ class TransmitterInitiator:
     def detener(self):
         """Detiene de forma segura todos los streams e hilos."""
         self.running = False
-        mic_bridge.detener_grabacion()
+        mic_bridge.detener()
         mic_processor.detener()
         mic_player.detener()
         
