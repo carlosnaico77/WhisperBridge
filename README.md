@@ -20,10 +20,10 @@ WhisperBridge was created with the mission to **eliminate language barriers in b
 
 We have fully refactored the original codebase, focusing on stability, performance, and best practices (OOP):
 
-1. **Object-Oriented Design (OOP):**
-   * **`AudioBridge` (in `bridge.py`):** Handles capturing blocks from the microphone and routing them to the appropriate queues, as well as handling the optional local playback/loopback.
-   * **`AudioProcessor` (in `processor.py`):** Encapsulates the AI model (Whisper), the audio accumulation buffer, and the Text-to-Speech engine (`pyttsx3`).
-   * **Instance Export:** The files directly export preconfigured instances (`audio_bridge` and `audio_processor`) to simplify imports in `main.py`.
+1. **Object-Oriented Design (OOD):**
+   * **`AudioBridge` (in [src/bridge.py](file:///home/clozano/Proyectos/TraductorUbuntu/src/bridge.py)):** Handles capturing blocks from the microphone and routing them to the appropriate queues, as well as handling the optional local playback/loopback.
+   * **`AudioProcessor` (in [src/processor.py](file:///home/clozano/Proyectos/TraductorUbuntu/src/processor.py)):** Encapsulates the AI model (Whisper), the audio accumulation buffer, and the Text-to-Speech engine (`pyttsx3`).
+   * **Instance Export:** The files directly export preconfigured instances (`audio_bridge` and `audio_processor`) to simplify imports in `src/main.py`.
 
 2. **Audio Conflict Resolution (Elastic Buffer Queues):**
    * We separated the audio stream into two distinct queues (`ia_queue` and `playback_queue`).
@@ -46,7 +46,7 @@ We have fully refactored the original codebase, focusing on stability, performan
 7. **Flexible Execution Environments (Local vs Cloud API):**
    * Integrated the `tipo_uso: TipoUso` parameter.
    * **`'local'`**: 100% offline physical privacy. Loads Whisper locally on your CPU/GPU hardware.
-   * **`'api'`**: Peak local hardware optimization. Delegates transcribing workloads to the cloud. The file `processor.py` includes a template method `_transcribir_via_api` detailing in-memory WAV buffer generation and API POST request formatting where the user can plug in their API keys.
+   * **`'api'`**: Peak local hardware optimization. Delegates transcribing workloads to the cloud. The file [src/processor.py](file:///home/clozano/Proyectos/TraductorUbuntu/src/processor.py) includes a template method `_transcribir_via_api` detailing in-memory WAV buffer generation and API POST request formatting where the user can plug in their API keys.
 
 ---
 
@@ -107,7 +107,7 @@ pip install -r requirements.txt
 ### 5. Run the Project
 Start the main script:
 ```bash
-python main.py
+python src/main.py
 ```
 
 ### 6. Set Up API Mode (Groq Cloud)
@@ -118,7 +118,7 @@ To get transcriptions and translations in milliseconds with maximum accuracy (`w
    ```env
    GROGTOKEN=your_groq_api_key_here
    ```
-4. Ensure the `tipo_uso` variable is set to `'api'` in your [main.py](file:///home/clozano/Proyectos/TraductorUbuntu/main.py#L16) file:
+4. Ensure the `tipo_uso` variable is set to `'api'` in your [main.py](file:///home/clozano/Proyectos/TraductorUbuntu/src/main.py#L16) file:
    ```python
    tipo_uso: TipoUso = 'api'
    ```
