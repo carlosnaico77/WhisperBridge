@@ -23,6 +23,7 @@ class Initiator:
             args=(ia_queue, modo, tarea, tipo_uso), 
             daemon=True
         )
+        
         ia_thread.start()
         
         # Si el modo de la IA es 'voz', muteamos el retorno del audio original
