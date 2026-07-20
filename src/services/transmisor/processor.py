@@ -2,12 +2,41 @@
 import os
 import io
 import wave
+# pyrefly: ignore [missing-import]
 import numpy as np
 import requests
 import queue
 import asyncio
 # pyrefly: ignore [missing-import]
 import edge_tts
+from typing import Literal
+
+# Definimos las mejores voces disponibles en inglés americano (US)
+TipoVoz = Literal[
+    'en-US-AndrewNeural',       # Masculino (Por defecto, profesional)
+    'en-US-BrianNeural',        # Masculino (Grave, natural)
+    'en-US-ChristopherNeural',  # Masculino (Conversacional)
+    'en-US-EricNeural',         # Masculino (Corporativo)
+    'en-US-EmmaNeural',         # Femenino (Claro, profesional)
+    'en-US-AvaNeural',          # Femenino (Enérgico)
+    'en-US-JennyNeural',        # Femenino (Nítido, estándar)
+    'en-US-MichelleNeural'      # Femenino (Suave)
+]
+
+VOCES_DISPONIBLES = {
+    "MASCULINAS": {
+        "andrew": "en-US-AndrewNeural",
+        "brian": "en-US-BrianNeural",
+        "christopher": "en-US-ChristopherNeural",
+        "eric": "en-US-EricNeural"
+    },
+    "FEMENINAS": {
+        "emma": "en-US-EmmaNeural",
+        "ava": "en-US-AvaNeural",
+        "jenny": "en-US-JennyNeural",
+        "michelle": "en-US-MichelleNeural"
+    }
+}
 
 class MicProcessor:
     def __init__(self):
